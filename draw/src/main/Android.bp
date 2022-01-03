@@ -1,0 +1,15 @@
+android_library {
+    name: "AndroidDrawLib",
+
+    resource_dirs: ["res"],
+
+    srcs: ["java/**/*.kt"],
+
+    static_libs: [
+        "androidx.appcompat_appcompat",
+        "androidx-constraintlayout_constraintlayout",
+        "com.google.android.material_material",
+    ],
+
+    sdk_version: "current",
+}
