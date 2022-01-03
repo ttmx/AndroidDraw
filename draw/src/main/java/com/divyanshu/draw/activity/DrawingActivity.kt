@@ -11,14 +11,40 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.ImageViewCompat
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.SeekBar
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.divyanshu.draw.R
+import com.divyanshu.draw.widget.CircleView
 import com.divyanshu.draw.widget.DrawView
-import kotlinx.android.synthetic.main.activity_drawing.*
-import kotlinx.android.synthetic.main.color_palette_view.*
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.ByteArrayOutputStream
 
 class DrawingActivity : AppCompatActivity() {
+
+    private val circle_view_opacity by lazy { findViewById<CircleView>(R.id.circle_view_opacity) }
+    private val circle_view_width by lazy { findViewById<CircleView>(R.id.circle_view_width) }
+    private val draw_color_palette by lazy { findViewById<LinearLayout>(R.id.draw_color_palette) }
+    private val draw_tools by lazy { findViewById<ConstraintLayout>(R.id.draw_tools) }
+    private val draw_view by lazy { findViewById<DrawView>(R.id.draw_view) }
+    private val fab_send_drawing by lazy { findViewById<FloatingActionButton>(R.id.fab_send_drawing) }
+    private val image_close_drawing by lazy { findViewById<ImageView>(R.id.image_close_drawing) }
+    private val image_color_black by lazy { findViewById<ImageView>(R.id.image_color_black) }
+    private val image_color_blue by lazy { findViewById<ImageView>(R.id.image_color_blue) }
+    private val image_color_brown by lazy { findViewById<ImageView>(R.id.image_color_brown) }
+    private val image_color_green by lazy { findViewById<ImageView>(R.id.image_color_green) }
+    private val image_color_pink by lazy { findViewById<ImageView>(R.id.image_color_pink) }
+    private val image_color_red by lazy { findViewById<ImageView>(R.id.image_color_red) }
+    private val image_color_yellow by lazy { findViewById<ImageView>(R.id.image_color_yellow) }
+    private val image_draw_color by lazy { findViewById<ImageView>(R.id.image_draw_color) }
+    private val image_draw_eraser by lazy { findViewById<ImageView>(R.id.image_draw_eraser) }
+    private val image_draw_opacity by lazy { findViewById<ImageView>(R.id.image_draw_opacity) }
+    private val image_draw_redo by lazy { findViewById<ImageView>(R.id.image_draw_redo) }
+    private val image_draw_undo by lazy { findViewById<ImageView>(R.id.image_draw_undo) }
+    private val image_draw_width by lazy { findViewById<ImageView>(R.id.image_draw_width) }
+    private val seekBar_opacity by lazy { findViewById<SeekBar>(R.id.seekBar_opacity) }
+    private val seekBar_width by lazy { findViewById<SeekBar>(R.id.seekBar_width) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

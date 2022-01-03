@@ -17,8 +17,9 @@ import androidx.core.content.ContextCompat
 import android.util.Log
 import android.view.WindowManager
 import android.widget.EditText
-import com.divyanshu.androiddraw.databinding.ActivityMainBinding
+import androidx.recyclerview.widget.RecyclerView
 import com.divyanshu.draw.activity.DrawingActivity
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
@@ -29,13 +30,13 @@ private const val PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 102
 class MainActivity : AppCompatActivity() {
 
     lateinit var adapter: DrawAdapter
-    private lateinit var binding: ActivityMainBinding
+
+    val fabAddDraw by lazy { findViewById<FloatingActionButton>(R.id.fab_add_draw) }
+    val recyclerView by lazy { findViewById<RecyclerView>(R.id.recycler_view) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
+        setContentView(R.layout.activity_main)
 
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
             != PackageManager.PERMISSION_GRANTED){
@@ -44,9 +45,9 @@ class MainActivity : AppCompatActivity() {
                     PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
         }else{
             adapter = DrawAdapter(this,getFilesPath())
-            binding.recyclerView.adapter = adapter
+            recyclerView.adapter = adapter
         }
-        binding.fabAddDraw.setOnClickListener {
+        fabAddDraw.setOnClickListener {
             val intent = Intent(this, DrawingActivity::class.java)
             startActivityForResult(intent, REQUEST_CODE_DRAW)
         }
@@ -98,7 +99,7 @@ class MainActivity : AppCompatActivity() {
             PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)){
                     adapter = DrawAdapter(this,getFilesPath())
-                    binding.recyclerView.adapter = adapter
+                    recyclerView.adapter = adapter
                 }else{
                     finish()
                 }
