@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Draw</string>
+    <string name="save_text">Save</string>
+    <string name="close_text">Close</string>
+    <string name="background_text">Background</string>
+    <string name="no_image_supplied">No image supplied</string>
 </resources>
