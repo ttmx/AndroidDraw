@@ -4,29 +4,33 @@ import android.app.Activity
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.ImageDecoder
+import android.media.ExifInterface
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.SeekBar
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.cardview.widget.CardView
 import androidx.core.content.res.ResourcesCompat
 import com.divyanshu.draw.R
-import com.divyanshu.draw.widget.CircleView
 import com.divyanshu.draw.widget.DrawView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import java.io.ByteArrayOutputStream
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 class DrawingActivity : AppCompatActivity() {
 
-    private val circle_view_opacity by lazy { findViewById<CircleView>(R.id.circle_view_opacity) }
-    private val circle_view_width by lazy { findViewById<CircleView>(R.id.circle_view_width) }
+    private val background_image by lazy { findViewById<ImageView>(R.id.background_img_view) }
     private val draw_color_palette by lazy { findViewById<LinearLayout>(R.id.draw_color_palette) }
-    private val draw_tools by lazy { findViewById<ConstraintLayout>(R.id.draw_tools) }
+    private val draw_tools by lazy { findViewById<CardView>(R.id.draw_tools) }
     private val draw_view by lazy { findViewById<DrawView>(R.id.draw_view) }
+    private val fab_close_drawing by lazy { findViewById<FloatingActionButton>(R.id.fab_close_drawing) }
     private val fab_send_drawing by lazy { findViewById<FloatingActionButton>(R.id.fab_send_drawing) }
-    private val image_close_drawing by lazy { findViewById<ImageView>(R.id.image_close_drawing) }
     private val image_color_black by lazy { findViewById<ImageView>(R.id.image_color_black) }
     private val image_color_blue by lazy { findViewById<ImageView>(R.id.image_color_blue) }
     private val image_color_brown by lazy { findViewById<ImageView>(R.id.image_color_brown) }
@@ -35,87 +39,82 @@ class DrawingActivity : AppCompatActivity() {
     private val image_color_red by lazy { findViewById<ImageView>(R.id.image_color_red) }
     private val image_color_yellow by lazy { findViewById<ImageView>(R.id.image_color_yellow) }
     private val image_draw_color by lazy { findViewById<ImageView>(R.id.image_draw_color) }
-    private val image_draw_eraser by lazy { findViewById<ImageView>(R.id.image_draw_eraser) }
-    private val image_draw_opacity by lazy { findViewById<ImageView>(R.id.image_draw_opacity) }
     private val image_draw_redo by lazy { findViewById<ImageView>(R.id.image_draw_redo) }
     private val image_draw_undo by lazy { findViewById<ImageView>(R.id.image_draw_undo) }
-    private val image_draw_width by lazy { findViewById<ImageView>(R.id.image_draw_width) }
-    private val seekBar_opacity by lazy { findViewById<SeekBar>(R.id.seekBar_opacity) }
-    private val seekBar_width by lazy { findViewById<SeekBar>(R.id.seekBar_width) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_drawing)
 
-        image_close_drawing.setOnClickListener {
+        if (intent.action != Intent.ACTION_EDIT && intent.data == null) {
+            Toast.makeText(this, R.string.no_image_supplied, Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
+        fab_close_drawing.setOnClickListener {
             finish()
         }
+
         fab_send_drawing.setOnClickListener {
-            val bStream = ByteArrayOutputStream()
-            val bitmap = draw_view.getBitmap()
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream)
-            val byteArray = bStream.toByteArray()
-            val returnIntent = Intent()
-            returnIntent.putExtra("bitmap", byteArray)
-            setResult(Activity.RESULT_OK, returnIntent)
+            val origBitmap = ImageDecoder.decodeBitmap(
+                ImageDecoder.createSource(contentResolver, intent.data!!)
+            )
+            val bitmap = draw_view.getTransparentBitmap(origBitmap.height, origBitmap.width)
+            val editableBitmap = origBitmap.copy(Bitmap.Config.ARGB_8888, true)
+            val canvas = Canvas(editableBitmap)
+            canvas.drawBitmap(bitmap, 0f, 0f, null)
+            saveImageToFile(editableBitmap)
+            setResult(Activity.RESULT_OK, Intent())
             finish()
         }
 
         setUpDrawTools()
 
+        if (intent.action == Intent.ACTION_EDIT) {
+            CoroutineScope(Dispatchers.Default).run {
+                intent.data?.let {
+                    setupEdit(it)
+                }
+            }
+        }
+
         colorSelector()
+    }
 
-        setPaintAlpha()
+    private fun setupEdit(uri: Uri) {
+        draw_view.setBackgroundColor(Color.TRANSPARENT)
+        background_image.setImageBitmap(
+            ImageDecoder.decodeBitmap(ImageDecoder.createSource(contentResolver, uri))
+        )
+    }
 
-        setPaintWidth()
+    private fun saveImageToFile(bitmap: Bitmap) {
+        val uri = intent.data!!
+        val datetime = contentResolver.openInputStream(uri)?.use {
+            ExifInterface(it).getAttribute(ExifInterface.TAG_DATETIME)
+        }.orEmpty()
+
+        contentResolver.openOutputStream(uri, "wt")?.use {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+        }
+
+        contentResolver.openFileDescriptor(uri, "rw")?.use {
+            ExifInterface(it.fileDescriptor).apply {
+                setAttribute(ExifInterface.TAG_DATETIME, datetime)
+                setAttribute(ExifInterface.TAG_DATETIME_ORIGINAL, datetime)
+                saveAttributes()
+            }
+        }
     }
 
     private fun setUpDrawTools() {
-        circle_view_opacity.setCircleRadius(100f)
-        image_draw_eraser.setOnClickListener {
-            draw_view.toggleEraser()
-            image_draw_eraser.isSelected = draw_view.isEraserOn
-            toggleDrawTools(draw_tools, false)
-        }
-        image_draw_eraser.setOnLongClickListener {
-            draw_view.clearCanvas()
-            toggleDrawTools(draw_tools, false)
-            true
-        }
-        image_draw_width.setOnClickListener {
-            if (draw_tools.translationY == (56).toPx) {
-                toggleDrawTools(draw_tools, true)
-            } else if (draw_tools.translationY == (0).toPx && seekBar_width.visibility == View.VISIBLE) {
-                toggleDrawTools(draw_tools, false)
-            }
-            circle_view_width.visibility = View.VISIBLE
-            circle_view_opacity.visibility = View.GONE
-            seekBar_width.visibility = View.VISIBLE
-            seekBar_opacity.visibility = View.GONE
-            draw_color_palette.visibility = View.GONE
-        }
-        image_draw_opacity.setOnClickListener {
-            if (draw_tools.translationY == (56).toPx) {
-                toggleDrawTools(draw_tools, true)
-            } else if (draw_tools.translationY == (0).toPx && seekBar_opacity.visibility == View.VISIBLE) {
-                toggleDrawTools(draw_tools, false)
-            }
-            circle_view_width.visibility = View.GONE
-            circle_view_opacity.visibility = View.VISIBLE
-            seekBar_width.visibility = View.GONE
-            seekBar_opacity.visibility = View.VISIBLE
-            draw_color_palette.visibility = View.GONE
-        }
         image_draw_color.setOnClickListener {
             if (draw_tools.translationY == (56).toPx) {
                 toggleDrawTools(draw_tools, true)
             } else if (draw_tools.translationY == (0).toPx && draw_color_palette.visibility == View.VISIBLE) {
                 toggleDrawTools(draw_tools, false)
             }
-            circle_view_width.visibility = View.GONE
-            circle_view_opacity.visibility = View.GONE
-            seekBar_width.visibility = View.GONE
-            seekBar_opacity.visibility = View.GONE
             draw_color_palette.visibility = View.VISIBLE
         }
         image_draw_undo.setOnClickListener {
@@ -140,50 +139,36 @@ class DrawingActivity : AppCompatActivity() {
         image_color_black.setOnClickListener {
             val color = ResourcesCompat.getColor(resources, R.color.color_black, null)
             draw_view.setColor(color)
-            circle_view_opacity.setColor(color)
-            circle_view_width.setColor(color)
             scaleColorView(image_color_black)
         }
         image_color_red.setOnClickListener {
             val color = ResourcesCompat.getColor(resources, R.color.color_red, null)
             draw_view.setColor(color)
-            circle_view_opacity.setColor(color)
-            circle_view_width.setColor(color)
             scaleColorView(image_color_red)
         }
         image_color_yellow.setOnClickListener {
             val color = ResourcesCompat.getColor(resources, R.color.color_yellow, null)
             draw_view.setColor(color)
-            circle_view_opacity.setColor(color)
-            circle_view_width.setColor(color)
             scaleColorView(image_color_yellow)
         }
         image_color_green.setOnClickListener {
             val color = ResourcesCompat.getColor(resources, R.color.color_green, null)
             draw_view.setColor(color)
-            circle_view_opacity.setColor(color)
-            circle_view_width.setColor(color)
             scaleColorView(image_color_green)
         }
         image_color_blue.setOnClickListener {
             val color = ResourcesCompat.getColor(resources, R.color.color_blue, null)
             draw_view.setColor(color)
-            circle_view_opacity.setColor(color)
-            circle_view_width.setColor(color)
             scaleColorView(image_color_blue)
         }
         image_color_pink.setOnClickListener {
             val color = ResourcesCompat.getColor(resources, R.color.color_pink, null)
             draw_view.setColor(color)
-            circle_view_opacity.setColor(color)
-            circle_view_width.setColor(color)
             scaleColorView(image_color_pink)
         }
         image_color_brown.setOnClickListener {
             val color = ResourcesCompat.getColor(resources, R.color.color_brown, null)
             draw_view.setColor(color)
-            circle_view_opacity.setColor(color)
-            circle_view_width.setColor(color)
             scaleColorView(image_color_brown)
         }
     }
@@ -214,32 +199,6 @@ class DrawingActivity : AppCompatActivity() {
         //set scale of selected view
         view.scaleX = 1.5f
         view.scaleY = 1.5f
-    }
-
-    private fun setPaintWidth() {
-        seekBar_width.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                draw_view.setStrokeWidth(progress.toFloat())
-                circle_view_width.setCircleRadius(progress.toFloat())
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-        })
-    }
-
-    private fun setPaintAlpha() {
-        seekBar_opacity.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                draw_view.setAlpha(progress)
-                circle_view_opacity.setAlpha(progress)
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-        })
     }
 
     private val Int.toPx: Float

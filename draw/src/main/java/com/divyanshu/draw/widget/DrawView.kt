@@ -105,6 +105,23 @@ class DrawView @JvmOverloads constructor(
         return bitmap
     }
 
+    fun getTransparentBitmap(h: Int?, w: Int?): Bitmap {
+        val bitmap = Bitmap.createBitmap(w ?: width, h ?: height, Bitmap.Config.ARGB_8888)
+
+        val canvas = Canvas(bitmap)
+        canvas.drawColor(Color.TRANSPARENT)
+
+        if (w != null && h != null) {
+            canvas.scale(w / width.toFloat(), h / height.toFloat())
+        }
+
+        mIsSaving = true
+        draw(canvas)
+        mIsSaving = false
+
+        return bitmap
+    }
+
     fun addPath(path: MyPath, options: PaintOptions) {
         mPaths[path] = options
     }

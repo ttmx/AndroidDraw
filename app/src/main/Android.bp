@@ -10,6 +10,7 @@ android_app {
     static_libs: [
         "AndroidDrawLib",
         "glide",
+        "kotlinx-coroutines-core",
     ],
 
     sdk_version: "current",

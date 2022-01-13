@@ -9,6 +9,7 @@ android_library {
         "androidx.appcompat_appcompat",
         "androidx-constraintlayout_constraintlayout",
         "com.google.android.material_material",
+        "kotlinx-coroutines-core",
     ],
 
     sdk_version: "current",
