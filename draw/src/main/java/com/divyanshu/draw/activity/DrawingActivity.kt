@@ -54,7 +54,7 @@ class DrawingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_drawing)
 
-        if (intent.action != Intent.ACTION_EDIT && intent.data == null) {
+        if (intent.action != Intent.ACTION_EDIT || intent.data == null) {
             Toast.makeText(this, R.string.no_image_supplied, Toast.LENGTH_SHORT).show()
             finish()
             return
