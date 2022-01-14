@@ -2,19 +2,16 @@ package com.divyanshu.draw.activity
 
 import android.app.Activity
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.graphics.Bitmap
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.widget.ImageViewCompat
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.SeekBar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.res.ResourcesCompat
 import com.divyanshu.draw.R
 import com.divyanshu.draw.widget.CircleView
 import com.divyanshu.draw.widget.DrawView
@@ -60,7 +57,7 @@ class DrawingActivity : AppCompatActivity() {
             val byteArray = bStream.toByteArray()
             val returnIntent = Intent()
             returnIntent.putExtra("bitmap", byteArray)
-            setResult(Activity.RESULT_OK,returnIntent)
+            setResult(Activity.RESULT_OK, returnIntent)
             finish()
         }
 
@@ -78,18 +75,18 @@ class DrawingActivity : AppCompatActivity() {
         image_draw_eraser.setOnClickListener {
             draw_view.toggleEraser()
             image_draw_eraser.isSelected = draw_view.isEraserOn
-            toggleDrawTools(draw_tools,false)
+            toggleDrawTools(draw_tools, false)
         }
         image_draw_eraser.setOnLongClickListener {
             draw_view.clearCanvas()
-            toggleDrawTools(draw_tools,false)
+            toggleDrawTools(draw_tools, false)
             true
         }
         image_draw_width.setOnClickListener {
-            if (draw_tools.translationY == (56).toPx){
-                toggleDrawTools(draw_tools,true)
-            }else if (draw_tools.translationY == (0).toPx && seekBar_width.visibility == View.VISIBLE){
-                toggleDrawTools(draw_tools,false)
+            if (draw_tools.translationY == (56).toPx) {
+                toggleDrawTools(draw_tools, true)
+            } else if (draw_tools.translationY == (0).toPx && seekBar_width.visibility == View.VISIBLE) {
+                toggleDrawTools(draw_tools, false)
             }
             circle_view_width.visibility = View.VISIBLE
             circle_view_opacity.visibility = View.GONE
@@ -98,10 +95,10 @@ class DrawingActivity : AppCompatActivity() {
             draw_color_palette.visibility = View.GONE
         }
         image_draw_opacity.setOnClickListener {
-            if (draw_tools.translationY == (56).toPx){
-                toggleDrawTools(draw_tools,true)
-            }else if (draw_tools.translationY == (0).toPx && seekBar_opacity.visibility == View.VISIBLE){
-                toggleDrawTools(draw_tools,false)
+            if (draw_tools.translationY == (56).toPx) {
+                toggleDrawTools(draw_tools, true)
+            } else if (draw_tools.translationY == (0).toPx && seekBar_opacity.visibility == View.VISIBLE) {
+                toggleDrawTools(draw_tools, false)
             }
             circle_view_width.visibility = View.GONE
             circle_view_opacity.visibility = View.VISIBLE
@@ -110,10 +107,10 @@ class DrawingActivity : AppCompatActivity() {
             draw_color_palette.visibility = View.GONE
         }
         image_draw_color.setOnClickListener {
-            if (draw_tools.translationY == (56).toPx){
-                toggleDrawTools(draw_tools,true)
-            }else if (draw_tools.translationY == (0).toPx && draw_color_palette.visibility == View.VISIBLE){
-                toggleDrawTools(draw_tools,false)
+            if (draw_tools.translationY == (56).toPx) {
+                toggleDrawTools(draw_tools, true)
+            } else if (draw_tools.translationY == (0).toPx && draw_color_palette.visibility == View.VISIBLE) {
+                toggleDrawTools(draw_tools, false)
             }
             circle_view_width.visibility = View.GONE
             circle_view_opacity.visibility = View.GONE
@@ -123,67 +120,67 @@ class DrawingActivity : AppCompatActivity() {
         }
         image_draw_undo.setOnClickListener {
             draw_view.undo()
-            toggleDrawTools(draw_tools,false)
+            toggleDrawTools(draw_tools, false)
         }
         image_draw_redo.setOnClickListener {
             draw_view.redo()
-            toggleDrawTools(draw_tools,false)
+            toggleDrawTools(draw_tools, false)
         }
     }
 
     private fun toggleDrawTools(view: View, showView: Boolean = true) {
-        if (showView){
+        if (showView) {
             view.animate().translationY((0).toPx)
-        }else{
+        } else {
             view.animate().translationY((56).toPx)
         }
     }
 
     private fun colorSelector() {
         image_color_black.setOnClickListener {
-            val color = ResourcesCompat.getColor(resources, R.color.color_black,null)
+            val color = ResourcesCompat.getColor(resources, R.color.color_black, null)
             draw_view.setColor(color)
             circle_view_opacity.setColor(color)
             circle_view_width.setColor(color)
             scaleColorView(image_color_black)
         }
         image_color_red.setOnClickListener {
-            val color = ResourcesCompat.getColor(resources, R.color.color_red,null)
+            val color = ResourcesCompat.getColor(resources, R.color.color_red, null)
             draw_view.setColor(color)
             circle_view_opacity.setColor(color)
             circle_view_width.setColor(color)
             scaleColorView(image_color_red)
         }
         image_color_yellow.setOnClickListener {
-            val color = ResourcesCompat.getColor(resources, R.color.color_yellow,null)
+            val color = ResourcesCompat.getColor(resources, R.color.color_yellow, null)
             draw_view.setColor(color)
             circle_view_opacity.setColor(color)
             circle_view_width.setColor(color)
             scaleColorView(image_color_yellow)
         }
         image_color_green.setOnClickListener {
-            val color = ResourcesCompat.getColor(resources, R.color.color_green,null)
+            val color = ResourcesCompat.getColor(resources, R.color.color_green, null)
             draw_view.setColor(color)
             circle_view_opacity.setColor(color)
             circle_view_width.setColor(color)
             scaleColorView(image_color_green)
         }
         image_color_blue.setOnClickListener {
-            val color = ResourcesCompat.getColor(resources, R.color.color_blue,null)
+            val color = ResourcesCompat.getColor(resources, R.color.color_blue, null)
             draw_view.setColor(color)
             circle_view_opacity.setColor(color)
             circle_view_width.setColor(color)
             scaleColorView(image_color_blue)
         }
         image_color_pink.setOnClickListener {
-            val color = ResourcesCompat.getColor(resources, R.color.color_pink,null)
+            val color = ResourcesCompat.getColor(resources, R.color.color_pink, null)
             draw_view.setColor(color)
             circle_view_opacity.setColor(color)
             circle_view_width.setColor(color)
             scaleColorView(image_color_pink)
         }
         image_color_brown.setOnClickListener {
-            val color =  ResourcesCompat.getColor(resources, R.color.color_brown,null)
+            val color = ResourcesCompat.getColor(resources, R.color.color_brown, null)
             draw_view.setColor(color)
             circle_view_opacity.setColor(color)
             circle_view_width.setColor(color)
@@ -220,7 +217,7 @@ class DrawingActivity : AppCompatActivity() {
     }
 
     private fun setPaintWidth() {
-        seekBar_width.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
+        seekBar_width.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 draw_view.setStrokeWidth(progress.toFloat())
                 circle_view_width.setCircleRadius(progress.toFloat())
@@ -233,7 +230,7 @@ class DrawingActivity : AppCompatActivity() {
     }
 
     private fun setPaintAlpha() {
-        seekBar_opacity.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
+        seekBar_opacity.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 draw_view.setAlpha(progress)
                 circle_view_opacity.setAlpha(progress)
