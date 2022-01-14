@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="DrawingTheme" parent="@style/Theme.AppCompat">
+        <item name="android:actionModeBackground">@android:color/transparent</item>
+        <item name="android:actionModeCloseDrawable">@drawable/ic_done_black_24dp</item>
+    </style>
+</resources>

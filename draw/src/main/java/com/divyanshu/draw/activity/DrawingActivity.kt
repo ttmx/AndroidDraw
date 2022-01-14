@@ -10,15 +10,17 @@ import android.graphics.ImageDecoder
 import android.media.ExifInterface
 import android.net.Uri
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ActionMode
 import androidx.cardview.widget.CardView
 import com.divyanshu.draw.R
 import com.divyanshu.draw.widget.DrawView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
@@ -28,8 +30,6 @@ class DrawingActivity : AppCompatActivity() {
     private val draw_color_palette by lazy { findViewById<LinearLayout>(R.id.draw_color_palette) }
     private val draw_tools by lazy { findViewById<CardView>(R.id.draw_tools) }
     private val draw_view by lazy { findViewById<DrawView>(R.id.draw_view) }
-    private val fab_close_drawing by lazy { findViewById<FloatingActionButton>(R.id.fab_close_drawing) }
-    private val fab_send_drawing by lazy { findViewById<FloatingActionButton>(R.id.fab_send_drawing) }
     private val image_draw_color by lazy { findViewById<ImageView>(R.id.image_draw_color) }
     private val image_draw_redo by lazy { findViewById<ImageView>(R.id.image_draw_redo) }
     private val image_draw_undo by lazy { findViewById<ImageView>(R.id.image_draw_undo) }
@@ -56,22 +56,56 @@ class DrawingActivity : AppCompatActivity() {
             return
         }
 
-        fab_close_drawing.setOnClickListener {
-            finish()
-        }
+        supportActionBar?.startActionMode(object : ActionMode.Callback {
+            override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+                menuInflater.inflate(R.menu.drawing_menu, menu)
+                return true
+            }
 
-        fab_send_drawing.setOnClickListener {
-            val origBitmap = ImageDecoder.decodeBitmap(
-                ImageDecoder.createSource(contentResolver, intent.data!!)
-            )
-            val bitmap = draw_view.getTransparentBitmap(origBitmap.height, origBitmap.width)
-            val editableBitmap = origBitmap.copy(Bitmap.Config.ARGB_8888, true)
-            val canvas = Canvas(editableBitmap)
-            canvas.drawBitmap(bitmap, 0f, 0f, null)
-            saveImageToFile(editableBitmap)
-            setResult(Activity.RESULT_OK, Intent())
-            finish()
-        }
+            override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?) = false
+
+            override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
+                when (item?.itemId) {
+                    R.id.action_delete -> {
+                        contentResolver.delete(intent.data!!, null)
+                        finish()
+                    }
+                    R.id.action_share -> {
+                        saveBitmap()
+                        finish()
+
+                        val uri = intent.data!!
+                        val intent = Intent(Intent.ACTION_SEND)
+                        intent.putExtra(Intent.EXTRA_STREAM, uri)
+                        intent.type = "image/png"
+
+                        startActivity(
+                            Intent.createChooser(
+                                intent, getString(R.string.abc_shareactionprovider_share_with)
+                            )
+                        )
+                    }
+                }
+                return true
+            }
+
+            override fun onDestroyActionMode(mode: ActionMode?) {
+                saveBitmap()
+                finish()
+            }
+
+            private fun saveBitmap() {
+                val origBitmap = ImageDecoder.decodeBitmap(
+                    ImageDecoder.createSource(contentResolver, intent.data!!)
+                )
+                val bitmap = draw_view.getTransparentBitmap(origBitmap.height, origBitmap.width)
+                val editableBitmap = origBitmap.copy(Bitmap.Config.ARGB_8888, true)
+                val canvas = Canvas(editableBitmap)
+                canvas.drawBitmap(bitmap, 0f, 0f, null)
+
+                saveImageToFile(editableBitmap)
+            }
+        })
 
         setUpDrawTools()
 

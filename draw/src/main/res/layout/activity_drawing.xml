@@ -44,32 +44,6 @@
         app:layout_constraintStart_toStartOf="@id/background_img_view"
         app:layout_constraintTop_toTopOf="@id/background_img_view" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_close_drawing"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:contentDescription="@string/save_text"
-        android:src="@drawable/ic_close_black_24dp"
-        android:tint="@color/color_white"
-        app:backgroundTint="@color/color_black"
-        app:fabSize="mini"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_send_drawing"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:contentDescription="@string/save_text"
-        android:src="@drawable/ic_done_black_24dp"
-        android:tint="@color/color_white"
-        app:backgroundTint="@color/color_black"
-        app:fabSize="mini"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <androidx.cardview.widget.CardView
         android:id="@+id/draw_tools"
         android:layout_width="0dp"
