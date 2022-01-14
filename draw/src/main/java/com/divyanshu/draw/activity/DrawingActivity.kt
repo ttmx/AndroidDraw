@@ -1,6 +1,7 @@
 package com.divyanshu.draw.activity
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -128,6 +129,10 @@ class DrawingActivity : AppCompatActivity() {
         background_image.setImageBitmap(
             ImageDecoder.decodeBitmap(ImageDecoder.createSource(contentResolver, uri))
         )
+        background_image.drawable.let {
+            requestedOrientation = if (it.intrinsicHeight > it.intrinsicWidth)
+                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT else ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        }
     }
 
     private fun saveImageToFile(bitmap: Bitmap) {
