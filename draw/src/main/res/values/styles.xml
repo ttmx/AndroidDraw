@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="DrawingTheme" parent="@style/Theme.AppCompat">
+    <style name="DrawingTheme" parent="@style/Theme.AppCompat.DayNight">
         <item name="android:actionModeBackground">@android:color/transparent</item>
         <item name="android:actionModeCloseDrawable">@drawable/ic_done_black_24dp</item>
+        <item name="android:navigationBarColor">?attr/colorPrimaryDark</item>
+    </style>
+
+    <style name="DrawToolsCardViewShapeAppearance">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">16dp</item>
+        <item name="cornerSizeTopLeft">16dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
     </style>
 </resources>

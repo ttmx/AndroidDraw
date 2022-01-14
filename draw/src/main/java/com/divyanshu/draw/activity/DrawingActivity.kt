@@ -18,9 +18,9 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
-import androidx.cardview.widget.CardView
 import com.divyanshu.draw.R
 import com.divyanshu.draw.widget.DrawView
+import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
@@ -28,7 +28,7 @@ class DrawingActivity : AppCompatActivity() {
 
     private val background_image by lazy { findViewById<ImageView>(R.id.background_img_view) }
     private val draw_color_palette by lazy { findViewById<LinearLayout>(R.id.draw_color_palette) }
-    private val draw_tools by lazy { findViewById<CardView>(R.id.draw_tools) }
+    private val draw_tools by lazy { findViewById<MaterialCardView>(R.id.draw_tools) }
     private val draw_view by lazy { findViewById<DrawView>(R.id.draw_view) }
     private val image_draw_color by lazy { findViewById<ImageView>(R.id.image_draw_color) }
     private val image_draw_redo by lazy { findViewById<ImageView>(R.id.image_draw_redo) }
@@ -147,6 +147,7 @@ class DrawingActivity : AppCompatActivity() {
     }
 
     private fun setUpDrawTools() {
+        draw_tools.setCardBackgroundColor(window.navigationBarColor)
         image_draw_color.setOnClickListener {
             if (draw_tools.translationY == (56).toPx) {
                 toggleDrawTools(draw_tools, true)
