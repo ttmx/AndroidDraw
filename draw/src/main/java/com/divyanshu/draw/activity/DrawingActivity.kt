@@ -16,7 +16,6 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-import androidx.core.content.res.ResourcesCompat
 import com.divyanshu.draw.R
 import com.divyanshu.draw.widget.DrawView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -31,16 +30,21 @@ class DrawingActivity : AppCompatActivity() {
     private val draw_view by lazy { findViewById<DrawView>(R.id.draw_view) }
     private val fab_close_drawing by lazy { findViewById<FloatingActionButton>(R.id.fab_close_drawing) }
     private val fab_send_drawing by lazy { findViewById<FloatingActionButton>(R.id.fab_send_drawing) }
-    private val image_color_black by lazy { findViewById<ImageView>(R.id.image_color_black) }
-    private val image_color_blue by lazy { findViewById<ImageView>(R.id.image_color_blue) }
-    private val image_color_brown by lazy { findViewById<ImageView>(R.id.image_color_brown) }
-    private val image_color_green by lazy { findViewById<ImageView>(R.id.image_color_green) }
-    private val image_color_pink by lazy { findViewById<ImageView>(R.id.image_color_pink) }
-    private val image_color_red by lazy { findViewById<ImageView>(R.id.image_color_red) }
-    private val image_color_yellow by lazy { findViewById<ImageView>(R.id.image_color_yellow) }
     private val image_draw_color by lazy { findViewById<ImageView>(R.id.image_draw_color) }
     private val image_draw_redo by lazy { findViewById<ImageView>(R.id.image_draw_redo) }
     private val image_draw_undo by lazy { findViewById<ImageView>(R.id.image_draw_undo) }
+
+    private val dots by lazy {
+        mapOf(
+            (findViewById<ImageView>(R.id.image_color_black)) to R.color.color_black,
+            (findViewById<ImageView>(R.id.image_color_red)) to R.color.color_red,
+            (findViewById<ImageView>(R.id.image_color_yellow)) to R.color.color_yellow,
+            (findViewById<ImageView>(R.id.image_color_green)) to R.color.color_green,
+            (findViewById<ImageView>(R.id.image_color_blue)) to R.color.color_blue,
+            (findViewById<ImageView>(R.id.image_color_pink)) to R.color.color_pink,
+            (findViewById<ImageView>(R.id.image_color_brown)) to R.color.color_brown,
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -136,65 +140,20 @@ class DrawingActivity : AppCompatActivity() {
     }
 
     private fun colorSelector() {
-        image_color_black.setOnClickListener {
-            val color = ResourcesCompat.getColor(resources, R.color.color_black, null)
-            draw_view.setColor(color)
-            scaleColorView(image_color_black)
-        }
-        image_color_red.setOnClickListener {
-            val color = ResourcesCompat.getColor(resources, R.color.color_red, null)
-            draw_view.setColor(color)
-            scaleColorView(image_color_red)
-        }
-        image_color_yellow.setOnClickListener {
-            val color = ResourcesCompat.getColor(resources, R.color.color_yellow, null)
-            draw_view.setColor(color)
-            scaleColorView(image_color_yellow)
-        }
-        image_color_green.setOnClickListener {
-            val color = ResourcesCompat.getColor(resources, R.color.color_green, null)
-            draw_view.setColor(color)
-            scaleColorView(image_color_green)
-        }
-        image_color_blue.setOnClickListener {
-            val color = ResourcesCompat.getColor(resources, R.color.color_blue, null)
-            draw_view.setColor(color)
-            scaleColorView(image_color_blue)
-        }
-        image_color_pink.setOnClickListener {
-            val color = ResourcesCompat.getColor(resources, R.color.color_pink, null)
-            draw_view.setColor(color)
-            scaleColorView(image_color_pink)
-        }
-        image_color_brown.setOnClickListener {
-            val color = ResourcesCompat.getColor(resources, R.color.color_brown, null)
-            draw_view.setColor(color)
-            scaleColorView(image_color_brown)
+        dots.forEach { (view, id) ->
+            view.setOnClickListener {
+                draw_view.setColor(getColor(id))
+                scaleColorView(view)
+            }
         }
     }
 
     private fun scaleColorView(view: View) {
         //reset scale of all views
-        image_color_black.scaleX = 1f
-        image_color_black.scaleY = 1f
-
-        image_color_red.scaleX = 1f
-        image_color_red.scaleY = 1f
-
-        image_color_yellow.scaleX = 1f
-        image_color_yellow.scaleY = 1f
-
-        image_color_green.scaleX = 1f
-        image_color_green.scaleY = 1f
-
-        image_color_blue.scaleX = 1f
-        image_color_blue.scaleY = 1f
-
-        image_color_pink.scaleX = 1f
-        image_color_pink.scaleY = 1f
-
-        image_color_brown.scaleX = 1f
-        image_color_brown.scaleY = 1f
+        dots.forEach { (view, _) ->
+            view.scaleX = 1f
+            view.scaleY = 1f
+        }
 
         //set scale of selected view
         view.scaleX = 1.5f
