@@ -26,7 +26,7 @@ import kotlinx.coroutines.Dispatchers
 class DrawingActivity : AppCompatActivity() {
 
     private val background_image by lazy { findViewById<ImageView>(R.id.background_img_view) }
-    private val draw_color_palette by lazy { findViewById<LinearLayout>(R.id.draw_color_palette) }
+    private val draw_color_palette by lazy { findViewById<MaterialCardView>(R.id.draw_color_palette) }
     private val draw_tools by lazy { findViewById<MaterialCardView>(R.id.draw_tools) }
     private val draw_view by lazy { findViewById<DrawView>(R.id.draw_view) }
     private val image_draw_color by lazy { findViewById<ImageView>(R.id.image_draw_color) }
@@ -43,6 +43,12 @@ class DrawingActivity : AppCompatActivity() {
             (findViewById<ImageView>(R.id.image_color_pink)) to R.color.color_pink,
             (findViewById<ImageView>(R.id.image_color_brown)) to R.color.color_brown,
         )
+    }
+
+    private var paletteHidden = true
+    private fun MaterialCardView.togglePalette() {
+        animate().translationY(if (paletteHidden) 0f else height.toFloat()).start()
+        paletteHidden = !paletteHidden
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -146,10 +152,10 @@ class DrawingActivity : AppCompatActivity() {
     }
 
     private fun setUpDrawTools() {
+        draw_color_palette.setCardBackgroundColor(window.navigationBarColor)
         draw_tools.setCardBackgroundColor(window.navigationBarColor)
         image_draw_color.setOnClickListener {
-            draw_color_palette.visibility =
-                if (draw_color_palette.visibility == View.GONE) View.VISIBLE else View.GONE
+            draw_color_palette.togglePalette()
         }
         image_draw_undo.setOnClickListener {
             draw_view.undo()
@@ -159,18 +165,14 @@ class DrawingActivity : AppCompatActivity() {
         }
     }
 
-    private fun setColor(view: View, id: Int) {
-        draw_view.setColor(getColor(id))
-        scaleColorView(view)
-    }
-
     private fun colorSelector() {
         dots.forEach { (view, id) ->
             view.setOnClickListener {
-                setColor(view, id)
+                draw_color_palette.togglePalette()
+                draw_view.setColor(getColor(id))
+                scaleColorView(view)
             }
         }
-        setColor(findViewById<ImageView>(R.id.image_color_blue), R.color.color_blue)
     }
 
     private fun scaleColorView(view: View) {

@@ -30,11 +30,32 @@
         app:layout_constraintTop_toTopOf="@id/background_img_view" />
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/draw_color_palette"
+        android:theme="@style/Theme.MaterialComponents.DayNight"
+        android:layout_width="0dp"
+        android:layout_height="126dp"
+        android:translationY="126dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:shapeAppearanceOverlay="@style/DrawToolsCardViewShapeAppearance">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <include
+                layout="@layout/color_palette_view"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/draw_tools"
         android:theme="@style/Theme.MaterialComponents.DayNight"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:cardElevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -80,16 +101,6 @@
                 app:layout_constraintStart_toEndOf="@id/image_draw_undo"
                 app:layout_constraintTop_toTopOf="parent"
                 app:tint="@color/icon_color_selector" />
-
-            <include
-                android:id="@+id/draw_color_palette"
-                layout="@layout/color_palette_view"
-                android:layout_width="wrap_content"
-                android:layout_height="56dp"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/image_draw_color" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
