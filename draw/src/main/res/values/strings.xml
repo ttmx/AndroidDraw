@@ -4,4 +4,6 @@
     <string name="close_text">Close</string>
     <string name="background_text">Background</string>
     <string name="no_image_supplied">No image supplied</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_share">Share</string>
 </resources>
