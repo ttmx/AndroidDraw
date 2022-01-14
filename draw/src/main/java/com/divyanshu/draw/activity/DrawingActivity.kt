@@ -54,11 +54,13 @@ class DrawingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_drawing)
 
-        if (intent.action != Intent.ACTION_EDIT || intent.data == null) {
+        if (intent.action != Intent.ACTION_EDIT || (intent.data == null && intent.clipData == null)) {
             Toast.makeText(this, R.string.no_image_supplied, Toast.LENGTH_SHORT).show()
             finish()
             return
         }
+
+        val uri = (intent.data ?: intent.clipData?.getItemAt(0)?.uri)!!
 
         supportActionBar?.startActionMode(object : ActionMode.Callback {
             override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
@@ -78,7 +80,6 @@ class DrawingActivity : AppCompatActivity() {
                         saveBitmap()
                         finish()
 
-                        val uri = intent.data!!
                         val intent = Intent(Intent.ACTION_SEND)
                         intent.putExtra(Intent.EXTRA_STREAM, uri)
                         intent.type = "image/png"
@@ -100,25 +101,21 @@ class DrawingActivity : AppCompatActivity() {
 
             private fun saveBitmap() {
                 val origBitmap = ImageDecoder.decodeBitmap(
-                    ImageDecoder.createSource(contentResolver, intent.data!!)
+                    ImageDecoder.createSource(contentResolver, uri)
                 )
                 val bitmap = draw_view.getTransparentBitmap(origBitmap.height, origBitmap.width)
                 val editableBitmap = origBitmap.copy(Bitmap.Config.ARGB_8888, true)
                 val canvas = Canvas(editableBitmap)
                 canvas.drawBitmap(bitmap, 0f, 0f, null)
 
-                saveImageToFile(editableBitmap)
+                saveImageToFile(editableBitmap, uri)
             }
         })
 
         setUpDrawTools()
 
-        if (intent.action == Intent.ACTION_EDIT) {
-            CoroutineScope(Dispatchers.Default).run {
-                intent.data?.let {
-                    setupEdit(it)
-                }
-            }
+        CoroutineScope(Dispatchers.Default).run {
+            setupEdit(uri)
         }
 
         colorSelector()
@@ -135,8 +132,7 @@ class DrawingActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveImageToFile(bitmap: Bitmap) {
-        val uri = intent.data!!
+    private fun saveImageToFile(bitmap: Bitmap, uri: Uri) {
         val datetime = contentResolver.openInputStream(uri)?.use {
             ExifInterface(it).getAttribute(ExifInterface.TAG_DATETIME)
         }.orEmpty()
