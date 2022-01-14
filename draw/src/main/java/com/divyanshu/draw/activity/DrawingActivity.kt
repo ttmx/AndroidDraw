@@ -165,14 +165,20 @@ class DrawingActivity : AppCompatActivity() {
         }
     }
 
+    private fun selectColor(view:View,id:Int){
+
+        draw_view.setColor(getColor(id))
+        scaleColorView(view)
+    }
+
     private fun colorSelector() {
         dots.forEach { (view, id) ->
             view.setOnClickListener {
                 draw_color_palette.togglePalette()
-                draw_view.setColor(getColor(id))
-                scaleColorView(view)
+                selectColor(view, id)
             }
         }
+        selectColor(findViewById(R.id.image_color_blue),R.color.color_blue)
     }
 
     private fun scaleColorView(view: View) {
