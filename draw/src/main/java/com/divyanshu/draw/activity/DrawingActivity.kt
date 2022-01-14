@@ -16,6 +16,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.core.content.res.ResourcesCompat
 import com.divyanshu.draw.R
 import com.divyanshu.draw.widget.DrawView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -24,25 +25,33 @@ import kotlinx.coroutines.Dispatchers
 
 class DrawingActivity : AppCompatActivity() {
 
-    private val background_image by lazy { findViewById<ImageView>(R.id.background_img_view) }
-    private val draw_color_palette by lazy { findViewById<LinearLayout>(R.id.draw_color_palette) }
-    private val draw_tools by lazy { findViewById<CardView>(R.id.draw_tools) }
-    private val draw_view by lazy { findViewById<DrawView>(R.id.draw_view) }
-    private val fab_close_drawing by lazy { findViewById<FloatingActionButton>(R.id.fab_close_drawing) }
-    private val fab_send_drawing by lazy { findViewById<FloatingActionButton>(R.id.fab_send_drawing) }
-    private val image_draw_color by lazy { findViewById<ImageView>(R.id.image_draw_color) }
-    private val image_draw_redo by lazy { findViewById<ImageView>(R.id.image_draw_redo) }
-    private val image_draw_undo by lazy { findViewById<ImageView>(R.id.image_draw_undo) }
+    private val background_image: ImageView by lazy { findViewById(R.id.background_img_view) }
+    private val draw_color_palette: LinearLayout by lazy { findViewById(R.id.draw_color_palette) }
+    private val draw_tools: CardView by lazy { findViewById(R.id.draw_tools) }
+    private val draw_view: DrawView by lazy { findViewById(R.id.draw_view) }
+    private val fab_send_drawing: FloatingActionButton by lazy { findViewById(R.id.fab_send_drawing) }
+    private val image_close_drawing: ImageView by lazy { findViewById(R.id.image_close_drawing) }
+    private val image_color_black: ImageView by lazy { findViewById(R.id.image_color_black) }
+    private val image_color_blue: ImageView by lazy { findViewById(R.id.image_color_blue) }
+    private val image_color_brown: ImageView by lazy { findViewById(R.id.image_color_brown) }
+    private val image_color_green: ImageView by lazy { findViewById(R.id.image_color_green) }
+    private val image_color_pink: ImageView by lazy { findViewById(R.id.image_color_pink) }
+    private val image_color_red: ImageView by lazy { findViewById(R.id.image_color_red) }
+    private val image_color_yellow: ImageView by lazy { findViewById(R.id.image_color_yellow) }
+    private val image_draw_color: ImageView by lazy { findViewById(R.id.image_draw_color) }
+    private val image_draw_redo: ImageView by lazy { findViewById(R.id.image_draw_redo) }
+    private val image_draw_undo: ImageView by lazy { findViewById(R.id.image_draw_undo) }
+
 
     private val dots by lazy {
-        mapOf(
-            (findViewById<ImageView>(R.id.image_color_black)) to R.color.color_black,
-            (findViewById<ImageView>(R.id.image_color_red)) to R.color.color_red,
-            (findViewById<ImageView>(R.id.image_color_yellow)) to R.color.color_yellow,
-            (findViewById<ImageView>(R.id.image_color_green)) to R.color.color_green,
-            (findViewById<ImageView>(R.id.image_color_blue)) to R.color.color_blue,
-            (findViewById<ImageView>(R.id.image_color_pink)) to R.color.color_pink,
-            (findViewById<ImageView>(R.id.image_color_brown)) to R.color.color_brown,
+        arrayOf(
+            Pair(image_color_black, R.color.color_black),
+            Pair(image_color_red, R.color.color_red),
+            Pair(image_color_yellow, R.color.color_yellow),
+            Pair(image_color_green, R.color.color_green),
+            Pair(image_color_blue, R.color.color_blue),
+            Pair(image_color_pink, R.color.color_pink),
+            Pair(image_color_brown, R.color.color_brown)
         )
     }
 
@@ -56,7 +65,7 @@ class DrawingActivity : AppCompatActivity() {
             return
         }
 
-        fab_close_drawing.setOnClickListener {
+        image_close_drawing.setOnClickListener {
             finish()
         }
 
@@ -139,20 +148,26 @@ class DrawingActivity : AppCompatActivity() {
         }
     }
 
+    private fun setColor(id: Int, view: View) {
+        val color = ResourcesCompat.getColor(resources, id, null)
+        draw_view.setColor(color)
+        scaleColorView(view)
+    }
     private fun colorSelector() {
-        dots.forEach { (view, id) ->
-            view.setOnClickListener {
-                draw_view.setColor(getColor(id))
-                scaleColorView(view)
+        for (d in dots) {
+            d.first.setOnClickListener {
+                setColor(d.second, it)
             }
         }
+        setColor(R.color.color_blue, image_color_blue)
     }
 
     private fun scaleColorView(view: View) {
         //reset scale of all views
-        dots.forEach { (view, _) ->
-            view.scaleX = 1f
-            view.scaleY = 1f
+        for (d in dots) {
+            val v = d.first
+            v.scaleX = 1f
+            v.scaleY = 1f
         }
 
         //set scale of selected view

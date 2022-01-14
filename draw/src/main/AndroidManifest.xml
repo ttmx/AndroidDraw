@@ -6,7 +6,6 @@
         <activity
             android:name=".activity.DrawingActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:excludeFromRecents="true"
             android:exported="true">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
