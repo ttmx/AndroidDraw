@@ -1,7 +1,6 @@
 package com.divyanshu.draw.activity
 
 import android.content.Intent
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -185,7 +184,4 @@ class DrawingActivity : AppCompatActivity() {
         view.scaleX = 1.5f
         view.scaleY = 1.5f
     }
-
-    private val Int.toPx: Float
-        get() = (this * Resources.getSystem().displayMetrics.density)
 }
