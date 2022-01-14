@@ -1,6 +1,5 @@
 package com.divyanshu.draw.activity
 
-import android.app.Activity
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -149,28 +148,14 @@ class DrawingActivity : AppCompatActivity() {
     private fun setUpDrawTools() {
         draw_tools.setCardBackgroundColor(window.navigationBarColor)
         image_draw_color.setOnClickListener {
-            if (draw_tools.translationY == (56).toPx) {
-                toggleDrawTools(draw_tools, true)
-            } else if (draw_tools.translationY == (0).toPx && draw_color_palette.visibility == View.VISIBLE) {
-                toggleDrawTools(draw_tools, false)
-            }
-            draw_color_palette.visibility = View.VISIBLE
+            draw_color_palette.visibility =
+                if (draw_color_palette.visibility == View.GONE) View.VISIBLE else View.GONE
         }
         image_draw_undo.setOnClickListener {
             draw_view.undo()
-            toggleDrawTools(draw_tools, false)
         }
         image_draw_redo.setOnClickListener {
             draw_view.redo()
-            toggleDrawTools(draw_tools, false)
-        }
-    }
-
-    private fun toggleDrawTools(view: View, showView: Boolean = true) {
-        if (showView) {
-            view.animate().translationY((0).toPx)
-        } else {
-            view.animate().translationY((56).toPx)
         }
     }
 
