@@ -79,16 +79,11 @@ class DrawingActivity : AppCompatActivity() {
                     R.id.action_share -> {
                         saveBitmap()
                         finish()
-
-                        val intent = Intent(Intent.ACTION_SEND)
-                        intent.putExtra(Intent.EXTRA_STREAM, uri)
-                        intent.type = "image/png"
-
-                        startActivity(
-                            Intent.createChooser(
-                                intent, getString(R.string.abc_shareactionprovider_share_with)
-                            )
-                        )
+                        startActivity(Intent.createChooser(Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_STREAM, uri)
+                            type = "image/*"
+                        }, null))
                     }
                 }
                 return true
