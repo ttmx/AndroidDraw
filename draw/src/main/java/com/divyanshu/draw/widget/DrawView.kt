@@ -7,6 +7,8 @@ import androidx.core.graphics.ColorUtils
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.content.ContextCompat.getColor
+import com.divyanshu.draw.R
 import java.util.LinkedHashMap
 
 class DrawView @JvmOverloads constructor(
@@ -19,7 +21,9 @@ class DrawView @JvmOverloads constructor(
 
     private var mPaint = Paint()
     private var mPath = MyPath()
-    private var mPaintOptions = PaintOptions()
+    private var mPaintOptions = PaintOptions().apply {
+        color = getColor(context, R.color.color_blue)
+    }
 
     private var mCurX = 0f
     private var mCurY = 0f

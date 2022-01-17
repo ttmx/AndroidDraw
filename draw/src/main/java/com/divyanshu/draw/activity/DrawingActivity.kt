@@ -1,7 +1,7 @@
 package com.divyanshu.draw.activity
 
 import android.content.Intent
-import android.content.res.Resources
+import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -13,7 +13,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
@@ -55,11 +54,13 @@ class DrawingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_drawing)
 
-        if (intent.action != Intent.ACTION_EDIT && intent.data == null) {
+        if (intent.action != Intent.ACTION_EDIT || (intent.data == null && intent.clipData == null)) {
             Toast.makeText(this, R.string.no_image_supplied, Toast.LENGTH_SHORT).show()
             finish()
             return
         }
+
+        val uri = (intent.data ?: intent.clipData?.getItemAt(0)?.uri)!!
 
         supportActionBar?.startActionMode(object : ActionMode.Callback {
             override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
@@ -78,17 +79,11 @@ class DrawingActivity : AppCompatActivity() {
                     R.id.action_share -> {
                         saveBitmap()
                         finish()
-
-                        val uri = intent.data!!
-                        val intent = Intent(Intent.ACTION_SEND)
-                        intent.putExtra(Intent.EXTRA_STREAM, uri)
-                        intent.type = "image/png"
-
-                        startActivity(
-                            Intent.createChooser(
-                                intent, getString(R.string.abc_shareactionprovider_share_with)
-                            )
-                        )
+                        startActivity(Intent.createChooser(Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_STREAM, uri)
+                            type = "image/*"
+                        }, null))
                     }
                 }
                 return true
@@ -101,25 +96,21 @@ class DrawingActivity : AppCompatActivity() {
 
             private fun saveBitmap() {
                 val origBitmap = ImageDecoder.decodeBitmap(
-                    ImageDecoder.createSource(contentResolver, intent.data!!)
+                    ImageDecoder.createSource(contentResolver, uri)
                 )
                 val bitmap = draw_view.getTransparentBitmap(origBitmap.height, origBitmap.width)
                 val editableBitmap = origBitmap.copy(Bitmap.Config.ARGB_8888, true)
                 val canvas = Canvas(editableBitmap)
                 canvas.drawBitmap(bitmap, 0f, 0f, null)
 
-                saveImageToFile(editableBitmap)
+                saveImageToFile(editableBitmap, uri)
             }
         })
 
         setUpDrawTools()
 
-        if (intent.action == Intent.ACTION_EDIT) {
-            CoroutineScope(Dispatchers.Default).run {
-                intent.data?.let {
-                    setupEdit(it)
-                }
-            }
+        CoroutineScope(Dispatchers.Default).run {
+            setupEdit(uri)
         }
 
         colorSelector()
@@ -130,10 +121,13 @@ class DrawingActivity : AppCompatActivity() {
         background_image.setImageBitmap(
             ImageDecoder.decodeBitmap(ImageDecoder.createSource(contentResolver, uri))
         )
+        background_image.drawable.let {
+            requestedOrientation = if (it.intrinsicHeight > it.intrinsicWidth)
+                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT else ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        }
     }
 
-    private fun saveImageToFile(bitmap: Bitmap) {
-        val uri = intent.data!!
+    private fun saveImageToFile(bitmap: Bitmap, uri: Uri) {
         val datetime = contentResolver.openInputStream(uri)?.use {
             ExifInterface(it).getAttribute(ExifInterface.TAG_DATETIME)
         }.orEmpty()
@@ -165,20 +159,14 @@ class DrawingActivity : AppCompatActivity() {
         }
     }
 
-    private fun selectColor(view:View,id:Int){
-
-        draw_view.setColor(getColor(id))
-        scaleColorView(view)
-    }
-
     private fun colorSelector() {
         dots.forEach { (view, id) ->
             view.setOnClickListener {
                 draw_color_palette.togglePalette()
-                selectColor(view, id)
+                draw_view.setColor(getColor(id))
+                scaleColorView(view)
             }
         }
-        selectColor(findViewById(R.id.image_color_blue),R.color.color_blue)
     }
 
     private fun scaleColorView(view: View) {
@@ -192,7 +180,4 @@ class DrawingActivity : AppCompatActivity() {
         view.scaleX = 1.5f
         view.scaleY = 1.5f
     }
-
-    private val Int.toPx: Float
-        get() = (this * Resources.getSystem().displayMetrics.density)
 }
