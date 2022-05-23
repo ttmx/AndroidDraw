@@ -6,11 +6,10 @@
     android:layout_height="match_parent"
     tools:context=".activity.DrawingActivity">
 
-    <ImageView
-        android:id="@+id/background_img_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="24dp"
+    <org.signal.imageeditor.core.ImageEditorView
+        android:id="@+id/draw_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:adjustViewBounds="true"
         android:background="@android:color/transparent"
         app:layout_constrainedHeight="true"
@@ -19,15 +18,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <com.divyanshu.draw.widget.DrawView
-        android:id="@+id/draw_view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@id/background_img_view"
-        app:layout_constraintEnd_toEndOf="@id/background_img_view"
-        app:layout_constraintStart_toStartOf="@id/background_img_view"
-        app:layout_constraintTop_toTopOf="@id/background_img_view" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/draw_color_palette"
@@ -73,11 +63,22 @@
                 android:foreground="?actionBarItemBackground"
                 android:padding="16dp"
                 android:src="@drawable/ic_color_lens_black_24dp"
-                app:layout_constraintEnd_toStartOf="@id/image_draw_undo"
+                app:layout_constraintEnd_toStartOf="@id/image_draw_crop"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:tint="@color/icon_color_selector" />
 
+            <ImageView
+                android:id="@+id/image_draw_crop"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:foreground="?actionBarItemBackground"
+                android:padding="16dp"
+                android:src="@drawable/ic_crop_black"
+                app:layout_constraintEnd_toStartOf="@id/image_draw_undo"
+                app:layout_constraintStart_toEndOf="@id/image_draw_color"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/icon_color_selector" />
             <ImageView
                 android:id="@+id/image_draw_undo"
                 android:layout_width="56dp"
@@ -86,7 +87,7 @@
                 android:padding="16dp"
                 android:src="@drawable/ic_undo_black_24dp"
                 app:layout_constraintEnd_toStartOf="@id/image_draw_redo"
-                app:layout_constraintStart_toEndOf="@id/image_draw_color"
+                app:layout_constraintStart_toEndOf="@id/image_draw_crop"
                 app:layout_constraintTop_toTopOf="parent"
                 app:tint="@color/icon_color_selector" />
 

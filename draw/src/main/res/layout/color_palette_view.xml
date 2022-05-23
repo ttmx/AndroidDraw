@@ -68,10 +68,10 @@
         android:paddingEnd="12dp" />
 
     <ImageView
-        android:id="@+id/image_color_brown"
+        android:id="@+id/image_color_white"
         android:layout_width="48dp"
         android:layout_height="match_parent"
-        android:src="@drawable/circle_brown"
+        android:src="@drawable/circle_white"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
         android:paddingStart="12dp"

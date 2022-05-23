@@ -11,4 +11,10 @@
     <color name="color_blue">#00B0FF</color>
     <color name="color_pink">#D500F9</color>
     <color name="color_brown">#8D6E63</color>
+
+    <dimen name="crop_area_renderer_edge_size">32dp</dimen>
+    <dimen name="crop_area_renderer_edge_thickness">2dp</dimen>
+    <dimen name="oval_guide_stroke_width">1dp</dimen>
+
+    <color name="crop_area_renderer_outer_color">#7f000000</color>
 </resources>

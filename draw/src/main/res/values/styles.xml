@@ -3,7 +3,7 @@
     <style name="DrawingTheme" parent="@style/Theme.AppCompat.DayNight">
         <item name="android:actionModeBackground">@android:color/transparent</item>
         <item name="android:actionModeCloseDrawable">@drawable/ic_done_black_24dp</item>
-        <item name="android:navigationBarColor">?attr/colorPrimaryDark</item>
+        <item name="android:navigationBarColor">?attr/colorPrimary</item>
     </style>
 
     <style name="DrawToolsCardViewShapeAppearance">
@@ -13,4 +13,8 @@
         <item name="cornerSizeBottomRight">0dp</item>
         <item name="cornerSizeBottomLeft">0dp</item>
     </style>
+
+
+    <color name="crop_area_renderer_edge_color">#66000000</color>
+    <color name="crop_circle_guide_color">#10000000</color>
 </resources>
