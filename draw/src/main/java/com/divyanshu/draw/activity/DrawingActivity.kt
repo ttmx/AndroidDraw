@@ -34,6 +34,7 @@ class DrawingActivity : AppCompatActivity() {
 //    private val background_image by lazy { findViewById<ImageView>(R.id.background_img_view) }
     private val draw_color_palette by lazy { findViewById<MaterialCardView>(R.id.draw_color_palette) }
     private val draw_tools by lazy { findViewById<MaterialCardView>(R.id.draw_tools) }
+    private val draw_tools_bg by lazy { findViewById<View>(R.id.draw_tools_bg) }
     private val draw_view by lazy { findViewById<ImageEditorView>(R.id.draw_view) }
     private val image_draw_color by lazy { findViewById<ImageView>(R.id.image_draw_color) }
     private val image_draw_crop by lazy { findViewById<ImageView>(R.id.image_draw_crop) }
@@ -216,9 +217,11 @@ class DrawingActivity : AppCompatActivity() {
         }
         image_draw_crop.setOnClickListener {
             if ( draw_view.model.isCropping ){
+                draw_tools_bg.setBackgroundColor(Color.TRANSPARENT)
                 draw_view.model.doneCrop()
                 draw_view.mode = ImageEditorView.Mode.Draw
             }else{
+                draw_tools_bg.setBackgroundColor(getColor(R.color.crop_area_renderer_outer_color))
                 draw_view.mode = ImageEditorView.Mode.MoveAndResize
                 draw_view.model.startCrop()
             }
